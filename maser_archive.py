@@ -4,12 +4,8 @@ from PIL import Image
 import streamlit as st
 import pandas as pd
 import numpy as np
-import time
 import os
 from radio_toolbox.fits_readers import Spectrum, setOfSpec
-import glob
-import matplotlib.pyplot as plt
-import plotly
 from graph_makers import make_heatmap, make_spectrum, make_light_curve
 
 
