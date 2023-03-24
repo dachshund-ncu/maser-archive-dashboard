@@ -7,13 +7,11 @@ import os
 from radio_toolbox.fits_readers import setOfSpec
 from graph_makers import make_heatmap, make_spectrum, make_light_curve_integrated, make_light_curve_channel
 
-
-
-ARCHIVE_DIR = os.path.join(os.path.dirname(__file__), 'archive')
-ARCHIVE_SUBDIR = 'm_band'
-TARED_DIR = os.path.join(os.path.dirname(__file__), 'tared_archives', 'fits_to_send')
 DE_CAT = os.path.dirname(__file__)
-LOADED_DATA = None
+ARCHIVE_DIR = os.path.join(DE_CAT, 'archive')
+ARCHIVE_SUBDIR = 'm_band'
+TARED_DIR = os.path.join(DE_CAT, 'tared_archives', 'fits_to_send')
+
 
 def read_sources_from_archive(directory: str) -> list:
     '''
