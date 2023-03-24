@@ -1,4 +1,4 @@
-# Maser-archive-dashboard
+# Maser archive dashboard
 This is a maser archive dashboard. Written using streamlit framework
 ## Target platform
 Gnu/Linux
