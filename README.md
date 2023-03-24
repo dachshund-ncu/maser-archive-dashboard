@@ -3,8 +3,8 @@ This is a maser archive dashboard. Written using streamlit framework
 ## Target platform
 Gnu/Linux
 ## Requirements
-App is teste under git version 2.34.1 and python 3.10.
-Python 3.8 and newer should be fine (but it is not guaranteed)
+App is tested under git version 2.34.1 and python 3.10.
+Python 3.8 and newer should be fine (but it is not guaranteed).
 ## Setting up the repository
 ```bash
 git clone https://github.com/dachshund-ncu/maser-archive-dashboard.git
