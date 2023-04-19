@@ -100,8 +100,8 @@ def main():
     # get the sidebar rollin'
     with st.sidebar:
         st.sidebar.title("Select source")
+        option = st.selectbox("select source", [source for source in list_of_sources], label_visibility="collapsed")
         with st.form("Form"):
-            option = st.selectbox("select source", [source for source in list_of_sources], label_visibility="collapsed")
             if option is not None and option != "":
                 with st.spinner(f"Loading {option}"):
                     data = load_spectral_data(option)
