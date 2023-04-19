@@ -4,14 +4,16 @@ from PIL import Image
 import streamlit as st
 import numpy as np
 import os
+import pandas as pd
 from radio_toolbox.fits_readers import setOfSpec
 from graph_makers import make_heatmap, make_spectrum, make_light_curve_integrated, make_light_curve_channel
+from sources_database.db_handler import sources_database
 
 DE_CAT = os.path.dirname(__file__)
 ARCHIVE_DIR = os.path.join(DE_CAT, 'archive')
 ARCHIVE_SUBDIR = 'm_band'
 TARED_DIR = os.path.join(DE_CAT, 'tared_archives', 'fits_to_send')
-
+SOURCES_DB = sources_database(os.path.join(DE_CAT, 'sources_database', 'maser_archive_database.db'))
 
 def read_sources_from_archive(directory: str) -> list:
     '''
@@ -45,7 +47,7 @@ def get_gal_longi(list_with_sources: str) -> list:
         longitudes.append(float(tmp[0]))
     return longitudes
 
-def on_click(data: setOfSpec, log_scale: bool, velocity_for_lc: float):
+def on_click(data: setOfSpec, log_scale: bool, velocity_for_lc: float, source_metadata: tuple):
     '''
     Invoked when sidebar button is clicked
     Aims to display dta on the central panel
@@ -59,7 +61,13 @@ def on_click(data: setOfSpec, log_scale: bool, velocity_for_lc: float):
     # light curve
     lcs_df, vel_of_chan = data.get_light_curve(velocity_for_lc, df=True)
     # data preparation
+    
+    if source_metadata is not None:
+        source_metadata.style.hide(axis="index")
+        st.subheader("%s parameters" % (source_metadata["Value"][0]))
+        st.dataframe(source_metadata, use_container_width=True)
     col1, col2 = st.columns(2)
+
     with col1:
         st.subheader("Heat map plot")
         st.plotly_chart(make_heatmap(x,y,z,rms, log_scale = log_scale))
@@ -91,13 +99,14 @@ def main():
 
     # get the sidebar rollin'
     with st.sidebar:
-        st.sidebar.title("Source")
-        option = st.selectbox("select source", [source for source in list_of_sources], label_visibility="collapsed")
+        st.sidebar.title("Select source")
         with st.form("Form"):
+            option = st.selectbox("select source", [source for source in list_of_sources], label_visibility="collapsed")
             if option is not None and option != "":
                 with st.spinner(f"Loading {option}"):
                     data = load_spectral_data(option)
             st.title(option)
+            source_metadata = SOURCES_DB.get_source_df(option)
             log_scale = st.checkbox("Heatmap log-scale", value=False)
             mjds = data.getMjdArray()
             vels = data.getVelArray()
@@ -112,7 +121,7 @@ def main():
     # after the submit - proceed with updating the dashboard contents
     if submit:
         ss = data.make_slice(channel_range, epoch_range)
-        on_click(ss, log_scale, vel_for_lc)
+        on_click(ss, log_scale, vel_for_lc, source_metadata)
 
 
 if __name__ == '__main__':
