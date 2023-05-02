@@ -7,13 +7,29 @@ import os
 import pandas as pd
 from radio_toolbox.fits_readers import setOfSpec
 from graph_makers import make_heatmap, make_spectrum, make_light_curve_integrated, make_light_curve_channel
-from sources_database.db_handler import sources_database
+from database_handler.db_handler import sources_database
+
+# DE_CAT = os.path.dirname(__file__)
+# ARCHIVE_DIR = os.path.join(DE_CAT, 'archive')
+# ARCHIVE_SUBDIR = 'm_band'
+# TARED_DIR = os.path.join(DE_CAT, 'tared_archives', 'fits_to_send')
+# SOURCES_DB = sources_database(os.path.join(DE_CAT, 'archive', 'maser_database.db'))
 
 DE_CAT = os.path.dirname(__file__)
-ARCHIVE_DIR = os.path.join(DE_CAT, 'archive')
+ARCHIVE_DIR = '/home/michu/Drop/Dropbox/metvar_archive/fits_sources'
 ARCHIVE_SUBDIR = 'm_band'
-TARED_DIR = os.path.join(DE_CAT, 'tared_archives', 'fits_to_send')
-SOURCES_DB = sources_database(os.path.join(DE_CAT, 'sources_database', 'maser_archive_database.db'))
+TARED_DIR = '/home/michu/Drop/Dropbox/metvar_archive/tarer/fits_to_send'
+SOURCES_DB = sources_database(os.path.join(os.path.dirname(ARCHIVE_DIR), 'maser_archive_db.db'))
+
+def read_sources_from_database(db: sources_database) -> list:
+    '''
+    Reads list of sourcenames from the database file:
+    Arguments:
+        |   db: sources_database object with database loaded
+    Returns:
+        |   sources_l: list with sourcenames
+    '''
+    return [row[1] for row in db.get_all_sources()]
 
 def read_sources_from_archive(directory: str) -> list:
     '''
@@ -95,7 +111,8 @@ def main():
     st.set_page_config(page_title="Torun 6.7 GHz methanol maser archive", layout='wide', page_icon=im)
 
     # get the list of sources for the archive
-    list_of_sources = read_sources_from_archive(ARCHIVE_DIR)
+    # list_of_sources = read_sources_from_archive(ARCHIVE_DIR)
+    list_of_sources = read_sources_from_database(SOURCES_DB)
 
     # get the sidebar rollin'
     with st.sidebar:
