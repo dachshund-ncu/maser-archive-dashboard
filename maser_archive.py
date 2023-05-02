@@ -9,17 +9,11 @@ from radio_toolbox.fits_readers import setOfSpec
 from graph_makers import make_heatmap, make_spectrum, make_light_curve_integrated, make_light_curve_channel
 from database_handler.db_handler import sources_database
 
-# DE_CAT = os.path.dirname(__file__)
-# ARCHIVE_DIR = os.path.join(DE_CAT, 'archive')
-# ARCHIVE_SUBDIR = 'm_band'
-# TARED_DIR = os.path.join(DE_CAT, 'tared_archives', 'fits_to_send')
-# SOURCES_DB = sources_database(os.path.join(DE_CAT, 'archive', 'maser_database.db'))
-
 DE_CAT = os.path.dirname(__file__)
-ARCHIVE_DIR = '/home/michu/Drop/Dropbox/metvar_archive/fits_sources'
+ARCHIVE_DIR = os.path.join(DE_CAT, 'archive')
 ARCHIVE_SUBDIR = 'm_band'
-TARED_DIR = '/home/michu/Drop/Dropbox/metvar_archive/tarer/fits_to_send'
-SOURCES_DB = sources_database(os.path.join(os.path.dirname(ARCHIVE_DIR), 'maser_archive_db.db'))
+TARED_DIR = os.path.join(DE_CAT, 'tared_archives', 'fits_to_send')
+SOURCES_DB = sources_database(os.path.join(DE_CAT, 'archive', 'maser_database.db'))
 
 def read_sources_from_database(db: sources_database) -> list:
     '''
