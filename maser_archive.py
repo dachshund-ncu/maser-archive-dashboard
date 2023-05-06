@@ -57,7 +57,7 @@ def get_gal_longi(list_with_sources: str) -> list:
         longitudes.append(float(tmp[0]))
     return longitudes
 
-def on_click(data: setOfSpec, log_scale: bool, velocity_for_lc: float, source_metadata: tuple):
+def on_click(data: setOfSpec, log_scale: bool, velocity_for_lc: float, source_metadata: tuple, show_heatmap: bool):
     '''
     Invoked when sidebar button is clicked
     Aims to display dta on the central panel
@@ -79,8 +79,9 @@ def on_click(data: setOfSpec, log_scale: bool, velocity_for_lc: float, source_me
     col1, col2 = st.columns(2)
 
     with col1:
-        st.subheader("Heat map plot")
-        st.plotly_chart(make_heatmap(x,y,z,rms, log_scale = log_scale))
+        if show_heatmap:
+            st.subheader("Heat map plot")
+            st.plotly_chart(make_heatmap(x,y,z,rms, log_scale = log_scale))
         st.subheader("Mean spectrum")
         st.plotly_chart(make_spectrum(data.get_mean_spectrum(), vel_of_chan))
     with col2:
@@ -118,6 +119,7 @@ def main():
                     data = load_spectral_data(option)
             st.title(option)
             source_metadata = SOURCES_DB.get_source_df(option)
+            show_heatmap = st.checkbox("Show heatmap plot", value=False)
             log_scale = st.checkbox("Heatmap log-scale", value=False)
             mjds = data.getMjdArray()
             vels = data.getVelArray()
@@ -132,7 +134,7 @@ def main():
     # after the submit - proceed with updating the dashboard contents
     if submit:
         ss = data.make_slice(channel_range, epoch_range)
-        on_click(ss, log_scale, vel_for_lc, source_metadata)
+        on_click(ss, log_scale, vel_for_lc, source_metadata, show_heatmap)
 
 
 if __name__ == '__main__':
