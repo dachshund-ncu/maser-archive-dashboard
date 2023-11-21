@@ -20,8 +20,13 @@ python3 -m pip install -r requirements.txt
 ```
 
 ## Runing the archive
+### Dashboard
 ```bash
 streamlit run maser_archive.py
+```
+### Uploader
+```bash
+streamlit run maser_uploader.py
 ```
 
 # Dashboard working flowchart
