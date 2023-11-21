@@ -1,19 +1,20 @@
 #! /usr/bin/env python3
 # -*- coding: utf-8 -*-
+import os,sys
 from PIL import Image
 import streamlit as st
 import numpy as np
-import os
 import pandas as pd
+from database_handler.archive_handler import move_files_to_database
 from radio_toolbox.fits_readers import setOfSpec
-from graph_makers import make_heatmap, make_spectrum, make_light_curve_integrated, make_light_curve_channel
+from utils.graph_makers import make_heatmap, make_spectrum, make_light_curve_integrated, make_light_curve_channel
 from database_handler.db_handler import sources_database
 
 DE_CAT = os.path.dirname(__file__)
-ARCHIVE_DIR = os.path.join(DE_CAT, 'archive')
+ARCHIVE_DIR = os.path.join(os.path.dirname(DE_CAT), 'archive')
 ARCHIVE_SUBDIR = 'm_band'
-TARED_DIR = os.path.join(DE_CAT, 'tared_archives', 'fits_to_send')
-SOURCES_DB = sources_database(os.path.join(DE_CAT, 'archive', 'maser_database.db'))
+TARED_DIR = os.path.join(os.path.dirname(DE_CAT), 'tared_archives', 'fits_to_send')
+SOURCES_DB = sources_database(os.path.join(os.path.dirname(DE_CAT), 'archive', 'maser_database.db'))
 
 def read_sources_from_database(db: sources_database) -> list:
     '''
@@ -98,13 +99,10 @@ def load_spectral_data(sourcename: str) -> setOfSpec:
     return setOfSpec(os.path.join(ARCHIVE_DIR, sourcename, ARCHIVE_SUBDIR))
 
 
-def main():
+def dashboard_archive():
     '''
     Main method of the dashboard app
     '''
-    im = Image.open(os.path.join(DE_CAT, 'assets', 'dachshund_of_doom_logo_no_sign_inkscape.png'))
-    st.set_page_config(page_title="Torun 6.7 GHz methanol maser archive", layout='wide', page_icon=im)
-
     # get the list of sources for the archive
     # list_of_sources = read_sources_from_archive(ARCHIVE_DIR)
     list_of_sources = read_sources_from_database(SOURCES_DB)
@@ -136,6 +134,27 @@ def main():
         ss = data.make_slice(channel_range, epoch_range)
         on_click(ss, log_scale, vel_for_lc, source_metadata, show_heatmap)
 
+def dashboard_uploader():
+    uploaded_files = st.file_uploader("Upload .fits files", accept_multiple_files=True, type=['fits'])
+   
+    if uploaded_files is not None:
+        # upload sources to the database
+        sources = move_files_to_database(uploaded_files, ARCHIVE_DIR, SOURCES_DB)
+        # generate tarball
+        os.chdir(ARCHIVE_DIR)
+        for src in sources:
+            os.system(f"tar -cvjf {os.path.join(TARED_DIR, src + '.tar.bz2')} {src}")
+        os.chdir(DE_CAT)
+
+def main():
+    im = Image.open(os.path.join(DE_CAT, 'assets', 'dachshund_of_doom_logo_no_sign_inkscape.png'))
+    st.set_page_config(page_title="Torun 6.7 GHz methanol maser archive", layout='wide', page_icon=im)
+    pages = {
+        "6.7 GHz dashboard": dashboard_archive,
+        "Upload .fits files": dashboard_uploader
+    }
+    selected = st.selectbox("Page", pages.keys())
+    pages[selected]()
 
 if __name__ == '__main__':
     main()

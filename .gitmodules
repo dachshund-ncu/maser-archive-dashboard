@@ -1,6 +1,6 @@
-[submodule "radio_toolbox"]
-	path = radio_toolbox
-	url = https://github.com/dachshund-ncu/radio_toolbox.git
-[submodule "database_handler"]
-	path = database_handler
+[submodule "services/database_handler"]
+	path = services/database_handler
 	url = https://github.com/dachshund-ncu/maser-archive-database-handler.git
+[submodule "services/radio_toolbox"]
+	path = services/radio_toolbox
+	url = https://github.com/dachshund-ncu/radio_toolbox.git
