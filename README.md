@@ -54,8 +54,18 @@ maser_observations_db
 end
 
 dashboard((Maser archive dashboard))
+
+
 database_handler(Database handler) -- source parameters -->  dashboard 
 
 maser_observations_db -- source parameters --> database_handler
 fits_files2 -- data for graphs --> dashboard
+
+uploader((Maser archive uploader))
+uploader -- update database and files --> database_handler -- updated info --> maser_observations_db
+database_handler -- add new files --> fits_files2
+subgraph services[Services]
+dashboard
+uploader
+end
 ```
